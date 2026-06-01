@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: task-api
+  description: API REST de gestion de tâches
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/source-location: url:https://github.com//task-api
+    argocd/app-name: task-api
+    tekton.dev/cicd: "true"
+spec:
+  type: service
+  lifecycle: development
+  owner: team-devops

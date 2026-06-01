@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-api
+  namespace: task-api-dev
+  labels:
+    app: task-api
+    dxp.io/managed: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-api
+  template:
+    metadata:
+      labels:
+        app: task-api
+    spec:
+      nodeSelector:
+        node-role: workload
+      tolerations:
+      - key: node-role
+        operator: Equal
+        value: workload
+        effect: NoSchedule
+      containers:
+      - name: task-api
+        image: harbor.dxp/dxp/task-api:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-api
+  namespace: task-api-dev
+spec:
+  selector:
+    app: task-api
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: ClusterIP
